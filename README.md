@@ -1,2 +1,4 @@
-# lowcomplexityNN
-a neural network framework for low complexity regions in proteins
+# Cell Maps
+a convolutional neural networks for protein localization in the cell.
+
+
