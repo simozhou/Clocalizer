@@ -15,10 +15,10 @@ print("imports done")
 
 feature_columns = [tf.feature_column.numeric_column("X", shape=(1000, 20))]
 
-num_hidden_units = [512, 256, 128]
+num_hidden_units = [1024, 512, 256, 128]
 
 model = tf.estimator.DNNClassifier(feature_columns=feature_columns,
-                                   n_classes=10, model_dir="./checkpoints_tutorial17-1/", hidden_units=num_hidden_units)
+                                   n_classes=10, model_dir="./checkpoints_FFN/", hidden_units=num_hidden_units)
 
 print("Model built")
 
@@ -47,3 +47,5 @@ final_test_input_fn = tf.estimator.inputs.numpy_input_fn(x={'X': x_test},
                                                          shuffle=False)
 
 model.evaluate(input_fn=final_test_input_fn)
+
+# accuracy = 0.6468619, average_loss = 2.4478252, global_step = 4000, loss = 312.85037
