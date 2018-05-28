@@ -1,5 +1,4 @@
 import tensorflow as tf
-import tensorboard as tb
 
 """
 this module is just for collecting all models for finding the best one. A tensorflow model should look something like:
@@ -38,7 +37,7 @@ def cnn(features, labels, mode, params):
 
     net = tf.reshape(x, [-1, 1000, 20, 1])
 
-    conv1 = tf.layers.conv2d(inputs=net, filters=30, kernel_size=7,
+    conv1 = tf.layers.conv2d(inputs=net, filters=30, kernel_size=3,
                              padding="same", activation=tf.nn.relu)
 
     conv2 = tf.layers.conv2d(inputs=conv1, filters=64, kernel_size=5,
@@ -106,7 +105,7 @@ def cnn_lstm(features, labels, mode, params):
 
     net = tf.reshape(x, [-1, 1000, 20, 1])
 
-    conv1 = tf.layers.conv2d(inputs=net, filters=30, kernel_size=7,
+    conv1 = tf.layers.conv2d(inputs=net, filters=30, kernel_size=3,
                              padding="same", activation=tf.nn.relu)
 
     conv2 = tf.layers.conv2d(inputs=conv1, filters=64, kernel_size=5,
@@ -119,9 +118,15 @@ def cnn_lstm(features, labels, mode, params):
     else:
         pool = conv2
 
+    # attempt with tf.keras.layers.concatenate -- FAILURE
+    # lstm_f = tf.keras.layers.LSTM(pool, dropout=0.4)()
+    # lstm_b = tf.keras.layers.LSTM(pool, dropout=0.4, go_backwards=True)
+    # concat_lstm = tf.keras.layers.concatenate((lstm_f, lstm_b))
+
+    # attempt with tf.keras.layers.Bidirectional -- FAILURE
     lstm_fb = tf.keras.layers.LSTM(pool, dropout=0.4)
 
-    concat_lstm = tf.keras.layers.Bidirectional(lstm_fb.shape)(lstm_fb)
+    concat_lstm = tf.keras.layers.Bidirectional(lstm_fb.input_shape)(lstm_fb)
 
     dense_1 = tf.layers.dense(inputs=concat_lstm, activation=tf.nn.relu, units=1024)
 
@@ -176,7 +181,7 @@ def cnn_2x_lstm(features, labels, mode, params):
 
     net = tf.reshape(x, [-1, 1000, 20, 1])
 
-    conv1 = tf.layers.conv2d(inputs=net, filters=30, kernel_size=7,
+    conv1 = tf.layers.conv2d(inputs=net, filters=30, kernel_size=3,
                              padding="same", activation=tf.nn.relu)
 
     conv2 = tf.layers.conv2d(inputs=conv1, filters=64, kernel_size=5,

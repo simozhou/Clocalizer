@@ -20,7 +20,7 @@ num_hidden_units = [1024, 512, 256, 128]
 # model = tf.estimator.DNNClassifier(feature_columns=feature_columns,
 #                                    n_classes=10, model_dir="./checkpoints_FFN/", hidden_units=num_hidden_units)
 
-model = tf.estimator.Estimator(model_fn=mo.cnn_lstm, params={'learning_rate': 1e-3, 'n_classes': 10, 'pooling': True},
+model = tf.estimator.Estimator(model_fn=mo.cnn, params={'learning_rate': 1e-3, 'n_classes': 10, 'pooling': True},
                                model_dir='./checkpoints_prova/')
 
 print("Model built")
