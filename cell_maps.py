@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import models as mo
+import os
 
 # loading datasets and phreshing folds for evaluations and testing
 
@@ -52,3 +53,6 @@ final_test_input_fn = tf.estimator.inputs.numpy_input_fn(x={'X': x_test},
 model.evaluate(input_fn=final_test_input_fn)
 
 # accuracy = 0.6468619, average_loss = 2.4478252, global_step = 4000, loss = 312.85037
+
+
+os.system("sudo shutdown")
