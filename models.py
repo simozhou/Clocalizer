@@ -40,7 +40,7 @@ def cnn(features, labels, mode, params):
     conv1 = tf.layers.conv2d(inputs=net, filters=30, kernel_size=3,
                              padding="same", activation=tf.nn.relu)
 
-    conv2 = tf.layers.conv2d(inputs=conv1, filters=64, kernel_size=5,
+    conv2 = tf.layers.conv2d(inputs=conv1, filters=30, kernel_size=5,
                              padding="same", activation=tf.nn.relu)
 
     if params['pooling']:
@@ -86,12 +86,17 @@ def cnn(features, labels, mode, params):
                 "accuracy": tf.metrics.accuracy(labels, y_pred_cls)
             }
 
+        accuracy = tf.contrib.metrics.accuracy(labels, tf.cast(y_pred_cls, tf.int32))
+
+        logging_hooks = tf.train.LoggingTensorHook({'accuracy': accuracy}, every_n_iter=10)
+
         # Wrap all of this in an EstimatorSpec.
         spec = tf.estimator.EstimatorSpec(
             mode=mode,
             loss=loss,
             train_op=train_op,
-            eval_metric_ops=metrics)
+            eval_metric_ops=metrics,
+            training_chief_hooks=[logging_hooks])
 
     return spec
 
@@ -162,12 +167,17 @@ def cnn_lstm(features, labels, mode, params):
                 "accuracy": tf.metrics.accuracy(labels, y_pred_cls)
             }
 
+        accuracy = tf.contrib.metrics.accuracy(labels, tf.cast(y_pred_cls, tf.int32))
+
+        logging_hooks = tf.train.LoggingTensorHook({'accuracy': accuracy}, every_n_iter=10)
+
         # Wrap all of this in an EstimatorSpec.
         spec = tf.estimator.EstimatorSpec(
             mode=mode,
             loss=loss,
             train_op=train_op,
-            eval_metric_ops=metrics)
+            eval_metric_ops=metrics,
+            training_chief_hooks=[logging_hooks])
 
     return spec
 
@@ -230,11 +240,16 @@ def cnn_2x_lstm(features, labels, mode, params):
                 "accuracy": tf.metrics.accuracy(labels, y_pred_cls)
             }
 
+        accuracy = tf.contrib.metrics.accuracy(labels, tf.cast(y_pred_cls, tf.int32))
+
+        logging_hooks = tf.train.LoggingTensorHook({'accuracy': accuracy}, every_n_iter=10)
+
         # Wrap all of this in an EstimatorSpec.
         spec = tf.estimator.EstimatorSpec(
             mode=mode,
             loss=loss,
             train_op=train_op,
-            eval_metric_ops=metrics)
+            eval_metric_ops=metrics,
+            training_chief_hooks=[logging_hooks])
 
     return spec

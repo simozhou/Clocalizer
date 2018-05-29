@@ -39,7 +39,7 @@ for i in range(1, 5):
 
     print("train input function built!")
 
-    model.train(input_fn=train_input_fn, steps=1000)
+    model.train(input_fn=train_input_fn, steps=1)
 
     print(f"CV step #{i} completed")
 
