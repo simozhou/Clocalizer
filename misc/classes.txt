@@ -1,0 +1,2 @@
+classes = ['Nucleus','Cytoplasm','Extracellular','Mitochondrion','Cell membrane','ER',
+           'Chloroplast','Golgi apparatus','Lysosome','Vacuole']
