@@ -124,6 +124,15 @@ perc_scores = round(scores[1] * 100, 2)
 
 print(f'Accuracy: {perc_scores}%')
 
-model.save(f'{args.model}.h5')
+# saving model architecture and weights
+
+mod_json = model.to_json()
+
+with open(f"{args.model}_arch.json", 'w') as json_file:
+    json_file.write(mod_json)
+
+model.save_weights(f'{args.model}_weights.h5')
+
+# switch off the instance
 
 os.system('sudo shutdown')
