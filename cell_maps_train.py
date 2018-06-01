@@ -22,7 +22,7 @@ num_hidden_units = [1024, 512, 256, 128]
 #                                    n_classes=10, model_dir="./checkpoints_FFN/", hidden_units=num_hidden_units)
 
 model = tf.estimator.Estimator(model_fn=mo.cnn, params={'learning_rate': 1e-4, 'n_classes': 10, 'pooling': True},
-                               model_dir='./checkpoints_prova/')
+                               model_dir='./checkpoints_cnn_lstm/')
 
 print("Model built")
 
@@ -40,7 +40,7 @@ for i in range(1, 5):
 
     print("train input function built!")
 
-    model.train(input_fn=train_input_fn, steps=1000)
+    model.train(input_fn=train_input_fn, steps=100)
 
     print(f"CV step #{i} completed")
 
