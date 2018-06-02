@@ -115,6 +115,10 @@ for i in range(1, 5):
     x_part, y_part, x_val, y_val = x_train[np.where(partition != i)], y_train[np.where(partition != i)], \
                                    x_train[np.where(partition == i)], y_train[np.where(partition == i)]
 
+    # reshaping the dataset to fit cnn needs
+
+    x_part, x_val = np.reshape(x_part, x_part.shape + (1,)), np.reshape(x_val, x_val.shape + (1,))
+
     model.fit(x_part, y_part, batch_size=128, epochs=epochs, validation_data=(x_val, y_val))
 
 scores = model.evaluate(x_test, y_test, batch_size=128, verbose=0)
