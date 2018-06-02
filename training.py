@@ -120,8 +120,10 @@ for i in range(1, 5):
                                                                                      10)
 
     # reshaping the dataset to fit cnn needs
-
-    x_part, x_val = np.reshape(x_part, x_part.shape + (1,)), np.reshape(x_val, x_val.shape + (1,))
+    if args.model != "cnn":
+        x_part, x_val = np.reshape(x_part, x_part.shape + (1, 1)), np.reshape(x_val, x_val.shape + (1, 1))
+    else:
+        x_part, x_val = np.reshape(x_part, x_part.shape + (1,)), np.reshape(x_val, x_val.shape + (1,))
 
     model.fit(x_part, y_part, batch_size=128, epochs=epochs, validation_data=(x_val, y_val))
 
