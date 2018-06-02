@@ -71,7 +71,6 @@ cnn2_lstm.add(Bidirectional(LSTM(100)))
 cnn2_lstm.add(Dense(units=1024))
 cnn2_lstm.add(Dropout(0.2))
 cnn2_lstm.add(Dense(units=10, activation='softmax'))
-cnn.add()
 
 models = dict(cnn=cnn, cnn_lstm=cnn_lstm, cnn2_lstm=cnn2_lstm)
 
