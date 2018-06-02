@@ -101,7 +101,7 @@ adam = Adam(l_rate, decay=decay)
 
 model = models[args.model]
 
-model.compile(optimizer=adam, loss='categorical_crossentropy', metrics='accuracy')
+model.compile(optimizer=adam, loss='categorical_crossentropy', metrics=['accuracy'])
 
 # to log the model structure
 
