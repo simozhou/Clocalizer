@@ -53,7 +53,7 @@ cnn2_lstm = Sequential(name="2-Convolutional_LSTM")
 
 # cnn 1
 
-cnn2_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=3, activation='relu'), input_shape=(3569, 1000, 20, 1)))
+cnn2_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=3, activation='relu'), input_shape=(None, 1000, 20, 1)))
 cnn2_lstm.add(TimeDistributed(Dropout(0.2)))
 cnn2_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=5, activation='relu')))
 cnn2_lstm.add(TimeDistributed(Dropout(0.2)))
