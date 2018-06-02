@@ -9,6 +9,7 @@ from keras.layers import Dense, Flatten, Dropout, LSTM
 from keras.layers.convolutional import Conv2D, MaxPooling2D
 from keras.layers import Bidirectional, TimeDistributed
 from keras.optimizers import Adam
+from keras.utils import to_categorical
 
 """
 this is where all models are built and trained. Keras Sequential is exploited, which will 
@@ -16,6 +17,7 @@ this is where all models are built and trained. Keras Sequential is exploited, w
 
 # SIMPLE CNN
 cnn = Sequential(name="Convolutional")
+
 #
 cnn.add(Conv2D(input_shape=(1000, 20, 1), filters=30, kernel_size=3, activation='relu'))
 cnn.add(Dropout(0.2))
@@ -29,7 +31,7 @@ cnn.add(Dense(units=1024))
 cnn.add(Dropout(0.2))
 cnn.add(Dense(units=10, activation='softmax'))
 
-# CNN WITH BIIRECTIONAL LSTM
+# CNN WITH BIDIRECTIONAL LSTM
 cnn_lstm = Sequential(name="Convolutional_lstm")
 
 cnn_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=3, activation='relu', ), input_shape=(128, 1000, 20, 1)))
@@ -69,6 +71,7 @@ cnn2_lstm.add(Bidirectional(LSTM(100)))
 cnn2_lstm.add(Dense(units=1024))
 cnn2_lstm.add(Dropout(0.2))
 cnn2_lstm.add(Dense(units=10, activation='softmax'))
+cnn.add()
 
 models = dict(cnn=cnn, cnn_lstm=cnn_lstm, cnn2_lstm=cnn2_lstm)
 
@@ -112,8 +115,10 @@ model.summary()
 for i in range(1, 5):
     # we partition the dataset so to have 4 groups for cross-validation
 
-    x_part, y_part, x_val, y_val = x_train[np.where(partition != i)], y_train[np.where(partition != i)], \
-                                   x_train[np.where(partition == i)], y_train[np.where(partition == i)]
+    x_part, y_part, x_val, y_val = x_train[np.where(partition != i)], to_categorical(y_train[np.where(partition != i)],
+                                                                                     10), \
+                                   x_train[np.where(partition == i)], to_categorical(y_train[np.where(partition == i)],
+                                                                                     10)
 
     # reshaping the dataset to fit cnn needs
 
