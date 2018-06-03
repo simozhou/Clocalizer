@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-import models as mo
+from depr import models as mo
 import os
 
 # loading datasets and phreshing folds for evaluations and testing

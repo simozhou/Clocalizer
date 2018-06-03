@@ -5,7 +5,7 @@ import os
 import sys
 import numpy as np
 from keras.models import Sequential
-from keras.layers import Dense, Flatten, Dropout, LSTM
+from keras.layers import Dense, Flatten, Dropout, LSTM, Reshape
 from keras.layers.convolutional import Conv2D, MaxPooling2D
 from keras.layers import Bidirectional, TimeDistributed
 from keras.optimizers import Adam
@@ -34,7 +34,8 @@ cnn.add(Dense(units=10, activation='softmax'))
 # CNN WITH BIDIRECTIONAL LSTM
 cnn_lstm = Sequential(name="Convolutional_lstm")
 
-cnn_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=3, activation='relu', ), input_shape=(None, 1000, 20, 1)))
+# cnn_lstm.add(Reshape((128, 1000, 20, 1), input_shape=())
+cnn_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=3, activation='relu'), input_shape=(None, 1000, 20, 1)))
 cnn_lstm.add(TimeDistributed(Dropout(0.2)))
 cnn_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=5, activation='relu')))
 cnn_lstm.add(TimeDistributed(Dropout(0.2)))
@@ -51,6 +52,7 @@ cnn_lstm.add(Dense(units=10, activation='softmax'))
 cnn2_lstm = Sequential(name="2-Convolutional_LSTM")
 
 # cnn 1
+
 cnn2_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=3, activation='relu'), input_shape=(None, 1000, 20, 1)))
 cnn2_lstm.add(TimeDistributed(Dropout(0.2)))
 cnn2_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=5, activation='relu')))
@@ -121,7 +123,8 @@ for i in range(1, 5):
 
     # reshaping the dataset to fit cnn needs
     if args.model != "cnn":
-        x_part, x_val = np.reshape(x_part, (1,) + x_part.shape + (1,)), np.reshape(x_val, (1,) + x_val.shape + (1,))
+        x_part, x_val = np.reshape(x_part, (x_part.shape[0], 1, x_part.shape[1], x_part.shape[2], 1)), \
+                        np.reshape(x_val, (x_val.shape[0], 1, x_val.shape[1], x_val.shape[2], 1))
     else:
         x_part, x_val = np.reshape(x_part, x_part.shape + (1,)), np.reshape(x_val, x_val.shape + (1,))
 
