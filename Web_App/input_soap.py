@@ -26,7 +26,8 @@ def get_results(jobid):
     coded_results = re.sub(" +", " ", coded_results)
     coded_results = StringIO(coded_results)
 
-    matrix = np.genfromtxt(coded_results, delimiter=" ",skip_header=3,skip_footer=5,filling_values="??",dtype=None,encoding='utf8',usecols=range(22,42))
+    matrix = np.genfromtxt(coded_results, delimiter=" ",skip_header=3,skip_footer=5,filling_values="??",encoding='utf8',usecols=range(22,42))
+    matrix = np.divide(matrix,100)
     return matrix
 
 
@@ -56,10 +57,11 @@ def make_input(sequence):
 
 
 if __name__ == '__main__':
-    output = make_input("MVLSPADKTNVKAAWGKVGAHAGEYGAEALERMFLSFPTTKTYFPHFDLSHGSAQVKGHGKKVADALTNAVAHVDDMPNALSALSDLHAHKLRVDPVNFKLLSHCLLVTLAAHLPAEFTPAVHASLDKFLASVSTVLTSKYR")
-    print(output)
+    #output = make_input("MVLSPADKTNVKAAWGKVGAHAGEYGAEALERMFLSFPTTKTYFPHFDLSHGSAQVKGHGKKVADALTNAVAHVDDMPNALSALSDLHAHKLRVDPVNFKLLSHCLLVTLAAHLPAEFTPAVHASLDKFLASVSTVLTSKYR")
+    #print(output)
     #while get_status(output) == "RUNNING":
     #    time.sleep(2)
     #print("finished")
-    #get_results("psisearch-S20180602-173445-0029-93524488-p1m")
+    o = get_results("psisearch-S20180602-173445-0029-93524488-p1m")
+    print(o)
 
