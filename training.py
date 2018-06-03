@@ -34,18 +34,17 @@ cnn.add(Dense(units=10, activation='softmax'))
 # CNN WITH BIDIRECTIONAL LSTM
 cnn_lstm = Sequential(name="Convolutional_lstm")
 
-# cnn_lstm.add(Reshape((128, 1000, 20, 1), input_shape=())
 cnn_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=3, activation='relu'), input_shape=(None, 1000, 20, 1)))
-cnn_lstm.add(TimeDistributed(Dropout(0.2)))
+# cnn_lstm.add(TimeDistributed(Dropout(0.2)))
 cnn_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=5, activation='relu')))
-cnn_lstm.add(TimeDistributed(Dropout(0.2)))
-cnn_lstm.add(TimeDistributed(MaxPooling2D((2, 2))))
+# cnn_lstm.add(TimeDistributed(Dropout(0.2)))
+cnn_lstm.add(TimeDistributed(MaxPooling2D((2, 2), strides=2)))
 cnn_lstm.add(TimeDistributed(Flatten()))
 cnn_lstm.add(Bidirectional(LSTM(100)))
 
-cnn_lstm.add(Dropout(0.2))
+# cnn_lstm.add(Dropout(0.2))
 cnn_lstm.add(Dense(units=1024))
-cnn_lstm.add(Dropout(0.2))
+cnn_lstm.add(Dropout(0.4))
 cnn_lstm.add(Dense(units=10, activation='softmax'))
 
 # DOUBLE CNN WITH BIDIRECTIONAL LSTM
@@ -54,24 +53,24 @@ cnn2_lstm = Sequential(name="2-Convolutional_LSTM")
 # cnn 1
 
 cnn2_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=3, activation='relu'), input_shape=(None, 1000, 20, 1)))
-cnn2_lstm.add(TimeDistributed(Dropout(0.2)))
+# cnn2_lstm.add(TimeDistributed(Dropout(0.2)))
 cnn2_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=5, activation='relu')))
-cnn2_lstm.add(TimeDistributed(Dropout(0.2)))
+# cnn2_lstm.add(TimeDistributed(Dropout(0.2)))
 cnn2_lstm.add(TimeDistributed(MaxPooling2D((2, 2))))
 
 # cnn2
 cnn2_lstm.add(TimeDistributed(Conv2D(filters=60, kernel_size=5, padding='same', activation='relu')))
-cnn2_lstm.add(TimeDistributed(Dropout(0.2)))
+# cnn2_lstm.add(TimeDistributed(Dropout(0.2)))
 cnn2_lstm.add(TimeDistributed(Conv2D(filters=60, kernel_size=7, padding='same', activation='relu')))
 cnn2_lstm.add(TimeDistributed(Dropout(0.2)))
-cnn2_lstm.add(TimeDistributed(MaxPooling2D((2, 2))))
+# cnn2_lstm.add(TimeDistributed(MaxPooling2D((2, 2))))
 cnn2_lstm.add(TimeDistributed(Flatten()))
 
 # 2-dir lstm
 cnn2_lstm.add(Bidirectional(LSTM(100)))
 
 cnn2_lstm.add(Dense(units=1024))
-cnn2_lstm.add(Dropout(0.2))
+cnn2_lstm.add(Dropout(0.4))
 cnn2_lstm.add(Dense(units=10, activation='softmax'))
 
 models = dict(cnn=cnn, cnn_lstm=cnn_lstm, cnn2_lstm=cnn2_lstm)
@@ -105,7 +104,7 @@ adam = Adam(l_rate, decay=decay)
 
 model = models[args.model]
 
-model.compile(optimizer=adam, loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer=adam, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
 # to log the model structure
 
@@ -116,10 +115,8 @@ model.summary()
 for i in range(1, 5):
     # we partition the dataset so to have 4 groups for cross-validation
 
-    x_part, y_part, x_val, y_val = x_train[np.where(partition != i)], to_categorical(y_train[np.where(partition != i)],
-                                                                                     10), \
-                                   x_train[np.where(partition == i)], to_categorical(y_train[np.where(partition == i)],
-                                                                                     10)
+    x_part, y_part, x_val, y_val = x_train[np.where(partition != i)], y_train[np.where(partition != i)], x_train[
+        np.where(partition == i)], y_train[np.where(partition == i)]
 
     # reshaping the dataset to fit cnn needs
     if args.model != "cnn":
@@ -128,23 +125,23 @@ for i in range(1, 5):
     else:
         x_part, x_val = np.reshape(x_part, x_part.shape + (1,)), np.reshape(x_val, x_val.shape + (1,))
 
-    model.fit(x_part, y_part, batch_size=128, epochs=epochs, validation_data=(x_val, y_val))
+    model.fit(x_part, y_part, batch_size=50, epochs=epochs, validation_data=(x_val, y_val))
 
-scores = model.evaluate(x_test, y_test, batch_size=128, verbose=0)
+    scores = model.evaluate(x_test, y_test, batch_size=50, verbose=0)
 
-perc_scores = round(scores[1] * 100, 2)
+    perc_scores = round(scores[1] * 100, 2)
 
-print(f'Accuracy: {perc_scores}%')
+    print(f'Accuracy: {perc_scores}%')
 
-# saving model architecture and weights
+    # saving model architecture and weights
 
-mod_json = model.to_json()
+    mod_json = model.to_json()
 
-with open(f"{args.model}_arch.json", 'w') as json_file:
-    json_file.write(mod_json)
+    with open(f"{args.model}_arch.json", 'w') as json_file:
+        json_file.write(mod_json)
 
-model.save_weights(f'{args.model}_weights.h5')
+    model.save_weights(f'{args.model}_weights.h5')
 
-# switch off the instance
+    # switch off the instance
 
-os.system('sudo shutdown')
+    os.system('sudo shutdown')
