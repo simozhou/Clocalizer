@@ -23,7 +23,7 @@ cnn.add(Conv2D(input_shape=(1000, 20, 1), filters=30, kernel_size=3, activation=
 # cnn.add(Dropout(0.2))
 cnn.add(Conv2D(filters=30, kernel_size=5, activation='relu'))
 # cnn.add(Dropout(0.2))
-cnn.add(MaxPooling2D((2, 2)))
+cnn.add(MaxPooling2D((2, 2), strides=2))
 
 cnn.add(Flatten())
 
@@ -40,7 +40,7 @@ cnn_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=5, activation='relu'
 # cnn_lstm.add(TimeDistributed(Dropout(0.2)))
 cnn_lstm.add(TimeDistributed(MaxPooling2D((2, 2), strides=2)))
 cnn_lstm.add(TimeDistributed(Flatten()))
-cnn_lstm.add(Bidirectional(LSTM(100)))
+cnn_lstm.add(Bidirectional(LSTM(100, recurrent_dropout=0.4)))
 
 # cnn_lstm.add(Dropout(0.2))
 cnn_lstm.add(Dense(units=1024))
@@ -56,18 +56,18 @@ cnn2_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=3, activation='relu
 # cnn2_lstm.add(TimeDistributed(Dropout(0.2)))
 cnn2_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=5, activation='relu')))
 # cnn2_lstm.add(TimeDistributed(Dropout(0.2)))
-cnn2_lstm.add(TimeDistributed(MaxPooling2D((2, 2))))
+cnn2_lstm.add(TimeDistributed(MaxPooling2D((2, 2), strides=2)))
 
 # cnn2
 cnn2_lstm.add(TimeDistributed(Conv2D(filters=60, kernel_size=5, padding='same', activation='relu')))
 # cnn2_lstm.add(TimeDistributed(Dropout(0.2)))
 cnn2_lstm.add(TimeDistributed(Conv2D(filters=60, kernel_size=7, padding='same', activation='relu')))
 # cnn2_lstm.add(TimeDistributed(Dropout(0.2)))
-cnn2_lstm.add(TimeDistributed(MaxPooling2D((2, 2))))
+cnn2_lstm.add(TimeDistributed(MaxPooling2D((2, 2), strides=2)))
 cnn2_lstm.add(TimeDistributed(Flatten()))
 
 # 2-dir lstm
-cnn2_lstm.add(Bidirectional(LSTM(100)))
+cnn2_lstm.add(Bidirectional(LSTM(100, recurrent_dropout=0.4)))
 
 cnn2_lstm.add(Dense(units=1024))
 cnn2_lstm.add(Dropout(0.4))
