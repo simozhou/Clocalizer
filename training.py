@@ -20,15 +20,15 @@ cnn = Sequential(name="Convolutional")
 
 #
 cnn.add(Conv2D(input_shape=(1000, 20, 1), filters=30, kernel_size=3, activation='relu'))
-cnn.add(Dropout(0.2))
+# cnn.add(Dropout(0.2))
 cnn.add(Conv2D(filters=30, kernel_size=5, activation='relu'))
-cnn.add(Dropout(0.2))
+# cnn.add(Dropout(0.2))
 cnn.add(MaxPooling2D((2, 2)))
 
 cnn.add(Flatten())
 
 cnn.add(Dense(units=1024))
-cnn.add(Dropout(0.2))
+cnn.add(Dropout(0.4))
 cnn.add(Dense(units=10, activation='softmax'))
 
 # CNN WITH BIDIRECTIONAL LSTM
@@ -62,8 +62,8 @@ cnn2_lstm.add(TimeDistributed(MaxPooling2D((2, 2))))
 cnn2_lstm.add(TimeDistributed(Conv2D(filters=60, kernel_size=5, padding='same', activation='relu')))
 # cnn2_lstm.add(TimeDistributed(Dropout(0.2)))
 cnn2_lstm.add(TimeDistributed(Conv2D(filters=60, kernel_size=7, padding='same', activation='relu')))
-cnn2_lstm.add(TimeDistributed(Dropout(0.2)))
-# cnn2_lstm.add(TimeDistributed(MaxPooling2D((2, 2))))
+# cnn2_lstm.add(TimeDistributed(Dropout(0.2)))
+cnn2_lstm.add(TimeDistributed(MaxPooling2D((2, 2))))
 cnn2_lstm.add(TimeDistributed(Flatten()))
 
 # 2-dir lstm
