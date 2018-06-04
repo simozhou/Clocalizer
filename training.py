@@ -4,8 +4,9 @@ import argparse
 import os
 import sys
 import numpy as np
+import tensorflow as tf
 from keras.models import Sequential
-from keras.layers import Dense, Flatten, Dropout, LSTM, Reshape
+from keras.layers import Dense, Flatten, Dropout, LSTM, Masking
 from keras.layers.convolutional import Conv2D, MaxPooling2D
 from keras.layers import Bidirectional, TimeDistributed
 from keras.optimizers import Adam
@@ -34,12 +35,14 @@ cnn.add(Dense(units=10, activation='softmax'))
 # CNN WITH BIDIRECTIONAL LSTM
 cnn_lstm = Sequential(name="Convolutional_lstm")
 
-cnn_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=3, activation='relu'), input_shape=(None, 1000, 20, 1)))
+cnn_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=3, activation='relu', padding='same'),
+                             input_shape=(None, 1000, 20, 1)))
 # cnn_lstm.add(TimeDistributed(Dropout(0.2)))
-cnn_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=5, activation='relu')))
+cnn_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=5, activation='relu', padding='same')))
 # cnn_lstm.add(TimeDistributed(Dropout(0.2)))
 cnn_lstm.add(TimeDistributed(MaxPooling2D((2, 2), strides=2)))
 cnn_lstm.add(TimeDistributed(Flatten()))
+cnn_lstm.add(TimeDistributed(Masking(mask_value=0.0)))
 cnn_lstm.add(Bidirectional(LSTM(100, recurrent_dropout=0.4)))
 
 # cnn_lstm.add(Dropout(0.2))
@@ -52,9 +55,10 @@ cnn2_lstm = Sequential(name="2-Convolutional_LSTM")
 
 # cnn 1
 
-cnn2_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=3, activation='relu'), input_shape=(None, 1000, 20, 1)))
+cnn2_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=3, activation='relu', padding='same'),
+                              input_shape=(None, 1000, 20, 1)))
 # cnn2_lstm.add(TimeDistributed(Dropout(0.2)))
-cnn2_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=5, activation='relu')))
+cnn2_lstm.add(TimeDistributed(Conv2D(filters=30, kernel_size=5, activation='relu', padding='same')))
 # cnn2_lstm.add(TimeDistributed(Dropout(0.2)))
 cnn2_lstm.add(TimeDistributed(MaxPooling2D((2, 2), strides=2)))
 
@@ -104,7 +108,9 @@ adam = Adam(l_rate, decay=decay)
 
 model = models[args.model]
 
-model.compile(optimizer=adam, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+loss_fn = lambda y_true, y_pred: tf.nn.softmax_cross_entropy_with_logits_v2(labels=y_true, logits=y_pred)
+
+model.compile(optimizer=adam, loss=loss_fn, metrics=['accuracy'])
 
 # to log the model structure
 
@@ -135,13 +141,13 @@ for i in range(1, 5):
 
     # saving model architecture and weights
 
-    mod_json = model.to_json()
+mod_json = model.to_json()
 
-    with open(f"{args.model}_arch.json", 'w') as json_file:
-        json_file.write(mod_json)
+with open(f"{args.model}_arch.json", 'w') as json_file:
+    json_file.write(mod_json)
 
-    model.save_weights(f'{args.model}_weights.h5')
+model.save_weights(f'{args.model}_weights.h5')
 
-    # switch off the instance
+# switch off the instance
 
-    os.system('sudo shutdown')
+os.system('sudo shutdown')
