@@ -98,7 +98,7 @@ train_ds, test_ds = np.load("train.npz"), np.load("test.npz")
 partition, x_train, y_train = train_ds["partition"], train_ds["X_train"], train_ds["y_train"]
 x_test, y_test = test_ds['X_test'], test_ds['y_test']
 
-l_rate, epochs = int(args.learning_rate), int(args.epochs)
+l_rate, epochs = float(args.learning_rate), int(args.epochs)
 
 decay = l_rate / epochs
 
@@ -145,7 +145,7 @@ for i in range(1, 5):
     else:
         x_part, x_val = np.reshape(x_part, x_part.shape + (1,)), np.reshape(x_val, x_val.shape + (1,))
 
-    model.fit(x_part, y_part, batch_size=128, epochs=epochs, validation_data=(x_val, y_val))
+    model.fit(x_part, y_part, batch_size=128, epochs=epochs, validation_data=(x_val, y_val), )
 
 # final evaluation
 scores, acc = model.evaluate(x_test, y_test, batch_size=30, verbose=0)
