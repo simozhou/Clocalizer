@@ -116,7 +116,6 @@ def loss_fn(y_true, y_pred):
     y_true = tf.cast(y_true, tf.int32)
     return tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y_true, logits=y_pred)
 
-
 def accuracy_fn(y_true, y_pred):
     y_true = tf.squeeze(y_true)
     y_true = tf.cast(y_true, tf.int64)
@@ -146,7 +145,7 @@ for i in range(1, 5):
     else:
         x_part, x_val = np.reshape(x_part, x_part.shape + (1,)), np.reshape(x_val, x_val.shape + (1,))
 
-    model.fit(x_part, y_part, batch_size=30, epochs=epochs, validation_data=(x_val, y_val))
+    model.fit(x_part, y_part, batch_size=128, epochs=epochs, validation_data=(x_val, y_val))
 
 # final evaluation
 scores, acc = model.evaluate(x_test, y_test, batch_size=30, verbose=0)
