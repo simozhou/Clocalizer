@@ -108,9 +108,24 @@ adam = Adam(l_rate, decay=decay)
 
 model = models[args.model]
 
-loss_fn = lambda y_true, y_pred: tf.nn.softmax_cross_entropy_with_logits_v2(labels=y_true, logits=y_pred)
 
-model.compile(optimizer=adam, loss=loss_fn, metrics=['accuracy'])
+# loss_fn = lambda y_true, y_pred: tf.nn.softmax_cross_entropy_with_logits_v2(labels=y_true, logits=y_pred)
+
+def loss_fn(y_true, y_pred):
+    y_true = tf.squeeze(y_true)
+    y_true = tf.cast(y_true, tf.int32)
+    return tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y_true, logits=y_pred)
+
+
+def accuracy_fn(y_true, y_pred):
+    y_true = tf.squeeze(y_true)
+    y_true = tf.cast(y_true, tf.int64)
+    y_pred = tf.argmax(y_pred, 1)
+    correct_predictions = tf.equal(y_pred, y_true)
+    return tf.reduce_mean(tf.cast(correct_predictions, "float"))
+
+
+model.compile(optimizer=adam, loss=loss_fn, metrics=[accuracy_fn])
 
 # to log the model structure
 
