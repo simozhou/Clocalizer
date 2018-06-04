@@ -133,11 +133,12 @@ for i in range(1, 5):
 
     model.fit(x_part, y_part, batch_size=30, epochs=epochs, validation_data=(x_val, y_val))
 
-    scores, acc = model.evaluate(x_test, y_test, batch_size=30, verbose=0)
+# final evaluation
+scores, acc = model.evaluate(x_test, y_test, batch_size=30, verbose=0)
 
-    perc_scores = round(acc * 100, 3)
+perc_scores = round(acc * 100, 3)
 
-    print(f'Accuracy: {perc_scores}%')
+print(f'Accuracy: {perc_scores}%')
 
     # saving model architecture and weights
 
