@@ -146,7 +146,7 @@ for i in range(1, 5):
     else:
         x_part, x_val = np.reshape(x_part, x_part.shape + (1,)), np.reshape(x_val, x_val.shape + (1,))
 
-    model.fit(x_part, y_part, batch_size=128, epochs=epochs / 4, validation_data=(x_val, y_val))
+    model.fit(x_part, y_part, batch_size=128, epochs=epochs // 4, validation_data=(x_val, y_val))
 
 # final evaluation
 scores, acc = model.evaluate(x_test, y_test, batch_size=30, verbose=0)
