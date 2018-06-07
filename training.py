@@ -10,7 +10,7 @@ from keras.layers import Dense, Flatten, Dropout, LSTM, Masking
 from keras.layers.convolutional import Conv2D, MaxPooling2D
 from keras.layers import Bidirectional, TimeDistributed
 from keras.optimizers import Adam
-from keras.utils import to_categorical
+from keras.callbacks import EarlyStopping, CSVLogger, ReduceLROnPlateau
 
 """
 this is where all models are built and trained. Keras Sequential is exploited, which will 
@@ -131,6 +131,14 @@ model.compile(optimizer=adam, loss='sparse_categorical_crossentropy', metrics=['
 
 model.summary()
 
+# callbacks
+
+csv_logger = CSVLogger(f"training_{args.model}.csv", append=True)
+
+early_stopper = EarlyStopping(min_delta=0.01, patience=10)
+
+l_rate_reducer = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=5e-5)
+
 # training phase with cross-validation at each step
 
 for i in range(1, 5):
@@ -146,7 +154,8 @@ for i in range(1, 5):
     else:
         x_part, x_val = np.reshape(x_part, x_part.shape + (1,)), np.reshape(x_val, x_val.shape + (1,))
 
-    model.fit(x_part, y_part, batch_size=128, epochs=epochs // 4, validation_data=(x_val, y_val))
+    model.fit(x_part, y_part, batch_size=128, epochs=epochs // 4, validation_data=(x_val, y_val),
+              callbacks=[csv_logger, early_stopper, l_rate_reducer])
 
 # final evaluation
 scores, acc = model.evaluate(x_test, y_test, batch_size=30, verbose=0)
@@ -155,7 +164,7 @@ perc_scores = round(acc * 100, 3)
 
 print(f'Accuracy: {perc_scores}%')
 
-    # saving model architecture and weights
+# saving model architecture and weights
 
 mod_json = model.to_json()
 
