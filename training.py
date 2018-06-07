@@ -158,7 +158,13 @@ for i in range(1, 5):
               callbacks=[csv_logger, early_stopper, l_rate_reducer])
 
 # final evaluation
-scores, acc = model.evaluate(x_test, y_test, batch_size=30, verbose=0)
+
+if args.model != "cnn":
+    x_test = np.reshape(x_test, (x_test.shape[0], 1, x_test.shape[1], x_test.shape[2], 1))
+else:
+    x_test = np.reshape(x_test, x_test.shape + (1,))
+
+scores, acc = model.evaluate(x_test, y_test, batch_size=20, verbose=0)
 
 perc_scores = round(acc * 100, 3)
 
