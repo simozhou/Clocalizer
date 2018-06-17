@@ -39,10 +39,14 @@ def get_results(jobid):
 def psiblaster(seq):
     CWD = os.path.dirname(os.path.realpath(__file__))
     print(CWD)
-    psiblast = sp.Popen("psiblast -db uniref50 -out_ascii_pssm temp.mat -num_iterations 3 -num_threads 8",
-                        stdin=sp.PIPE,
-                        stdout=sp.PIPE, stderr=sp.STDOUT, shell=True, cwd=CWD)
-    alignment, err = psiblast.communicate(bytes(seq, 'utf-8'))
+    # psiblast = sp.Popen("psiblast -db uniref50 -out_ascii_pssm temp.mat -num_iterations 3 -num_threads 8",
+    #                     stdin=sp.PIPE,
+    #                     stdout=sp.PIPE, stderr=sp.STDOUT, shell=True, cwd=CWD)
+    # alignment, err = psiblast.communicate(bytes(seq, 'utf-8'))
+    with open ("temp_seq.fasta", "w") as f:
+        f.write(seq)
+
+    os.system("psiblast -db ./bin/uniref50 -query temp_seq.fasta -out_ascii_pssm temp.mat -num_iterations 3 -num_threads 8")
 
     with open('temp.mat', 'rb') as f:
         result = f.read()
