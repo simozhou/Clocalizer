@@ -35,6 +35,70 @@ def get_results(jobid):
     return matrix
 
 
+def psiblaster(seq):
+    CWD = os.path.dirname(os.path.realpath(__file__))
+    print(CWD)
+    psiblast = sp.Popen("./bin/psiblast -db uniref50 -out_ascii_pssm temp.mat -num_iterations 3 -num_threads 8",
+                        stdin=sp.PIPE,
+                        stdout=sp.PIPE, stderr=sp.STDOUT, shell=True, cwd=CWD)
+    alignment, err = psiblast.communicate(bytes(seq, 'utf-8'))
+
+    with open('temp.mat', 'rb') as f:
+        result = f.read()
+
+    os.system("rm temp.mat")
+
+    coded_results = result.decode('utf8')
+    coded_results = re.sub(" +", " ", coded_results)
+    coded_results = StringIO(coded_results)
+
+    matrix = np.genfromtxt(coded_results, delimiter=" ", skip_header=3, skip_footer=5, filling_values="??",
+                           encoding='utf8', usecols=range(22, 42))
+
+    matrix = np.divide(matrix, 100)
+
+    return matrix, err
+
+
+def tailor(sequence, n=1000):
+    """
+    returns a sequence of shape Nx20 by adding zeros at the end or removing elements from the middle
+    """
+    # if it is only one sequence, we want to convert this 2d array into a tensor to be fed to the model
+    if len(sequence.shape) < 3:
+        sequence = np.reshape(sequence, (1,) + sequence.shape)
+
+    length = sequence.shape[1]
+    difference = length - n
+
+    if difference < 0:
+        tailored = np.concatenate((sequence, np.zeros((1, abs(difference), 20), dtype=np.float32)), axis=1)
+
+    elif difference > 0:
+        span = range(round((length - 1) / 3), round((length - 1) * 2 / 3) + 1)
+        tailored = np.delete(sequence, np.random.choice(span, abs(difference), replace=False, ), axis=1)
+
+    else:
+        tailored = sequence
+
+    return tailored
+
+
+def reshaper(seq_set, model):
+    '''
+    adds, if not present, the correct nuber of dimensions to fit the model
+    :param seq_set:
+    :param model:
+    :return:
+    '''
+    if model != "cnn":
+        feedable = np.reshape(seq_set, (seq_set.shape[0], 1, seq_set.shape[1], seq_set.shape[2], 1))
+    else:
+        feedable = np.reshape(seq_set, seq_set.shape + (1,))
+
+    return feedable
+
+
 def make_input(sequence):
     jobID1 = make_request(sequence)
     print(jobID1)
