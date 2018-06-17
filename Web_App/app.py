@@ -32,9 +32,9 @@ def predict():
     classes = ['Nucleus', 'Cytoplasm', 'Extracellular', 'Mitochondrion', 'Cell membrane', 'ER',
                'Chloroplast', 'Golgi apparatus', 'Lysosome', 'Vacuole']
     sequence = clean_sequence(request.form['sequence'])
-    pssm = inp.make_input(sequence)
-    # pssm, err = inp.psiblaster(sequence)
-    pssm = inp.tailor(pssm, 1000)
+    # pssm = inp.make_input(sequence)
+    pssm, err = inp.psiblaster(sequence)
+    pssm = inp.ohe_tailor(pssm, 1000)
     feedable = inp.reshaper(pssm, 'cnn')
     with graph.as_default():
         result = classes[np.argmax(model.predict(feedable))]

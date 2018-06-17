@@ -1,9 +1,10 @@
 from zeep import Client as cl
 import time
-from pyspin.spin import make_spin, Default
 import numpy as np
 from io import StringIO
 import re
+import subprocess as sp
+import os
 
 global client
 client = cl("http://www.ebi.ac.uk/Tools/services/soap/psisearch?wsdl")
@@ -15,7 +16,7 @@ def make_request(seq, prev_req=None):
     if prev_req is not None:
         params['previousjobid'] = prev_req
 
-    jobID = client.service.run(email="jan.delshad@gmail.com", title="colocalizer", parameters=params)
+    jobID = client.service.run(email="simone.procaccia@gmail.com", title="Clocalizer", parameters=params)
     return jobID
 
 
@@ -99,6 +100,35 @@ def reshaper(seq_set, model):
     return feedable
 
 
+def ohe_tailor(ohe, N=1000):
+    '''Function to get out of a matrix nx20 a matrix Nx20
+    works as a tailor: if the profile is too large with respect of N, the function tightens it,
+                       if the profile is too small it inserts patches'''
+    n = ohe.shape[0]
+
+    if n < N:
+
+        for i in range(N - n):
+            length = ohe.shape[0]
+            random_index = np.random.randint(low=round((length - 1) / 3), high=round((length - 1) * 2 / 3))
+            ohe = np.insert(ohe, random_index, np.zeros(20, dtype=np.float32), axis=0)
+        if len(ohe.shape) < 3:
+            ohe = np.reshape(ohe, (1,) + ohe.shape)
+        return ohe
+    elif n > N:
+        for i in range(n - N):
+            length = ohe.shape[0]
+            random_index = np.random.randint(low=round((length - 1) / 3), high=round((length - 1) * 2 / 3))
+            ohe = np.delete(ohe, random_index, axis=0)
+        if len(ohe.shape) < 3:
+            ohe = np.reshape(ohe, (1,) + ohe.shape)
+        return ohe
+    else:
+        if len(ohe.shape) < 3:
+            ohe = np.reshape(ohe, (1,) + ohe.shape)
+        return ohe
+
+
 def make_input(sequence):
     jobID1 = make_request(sequence)
     print(jobID1)
@@ -123,10 +153,22 @@ def make_input(sequence):
 
 
 if __name__ == '__main__':
-    # output = make_input("MVLSPADKTNVKAAWGKVGAHAGEYGAEALERMFLSFPTTKTYFPHFDLSHGSAQVKGHGKKVADALTNAVAHVDDMPNALSALSDLHAHKLRVDPVNFKLLSHCLLVTLAAHLPAEFTPAVHASLDKFLASVSTVLTSKYR")
-    # print(output)
-    # while get_status(output) == "RUNNING":
-    #    time.sleep(2)
-    # print("finished")
-    o = get_results("psisearch-S20180602-173445-0029-93524488-p1m")
-    print(o)
+    import time
+
+    start = time.time()
+    output = make_input(
+        "MYDADEDMQYDEDDDEITPDLWQEACWIVISSYFDEKGLVRQQLDSFDEFIQMSVQRIVEDAPPIDLQAEAQHASGEVEEPPRYLLKFEQIYLSKPTHWERDGAPSPMMPNEARLRNLTYSAPLYVDITKTVIKEGEEQLQTQHQKTFIGKIPIMLRSTYCLLNGLTDRDLCELNECPLDPGGYFIINGSEKVLIAQEKMATNTVYVFAKKDSKYAYTGECRSCLENSSRPTSTIWVSMLARGGQGAKKSAIGQRIVATLPYIKQEVPIIIVFRALGFVSDRDILEHIIYDFEDPEMMEMVKPSLDEAFVIQEQNVALNFIGSRGAKPGVTKEKRIKYAKEVLQKEMLPHVGVSDFCETKKAYFLGYMVHRLLLAALGRRELDDRDHYGNKRLDLAGPLLAFLFRGMFKNLLKEVRIYAQKFIDRGKDFNLELAIKTRIISDGLKYSLATGNWGDQKKAHQARAGVSQVLNRLTFASTLSHLRRLNSPIGRDGKLAKPRQLHNTLWGMVCPAETPEGHAVGLVKNLALMAYISVGSQPSPILEFLEEWSMENLEEISPAAIADATKIFVNGCWVGIHKDPEQLMNTLRKLRRQMDIIVSEVSMIRDIREREIRIYTDAGRICRPLLIVEKQKLLLKKRHIDQLKEREYNNYSWQDLVASGVVEYIDTLEEETVMLAMTPDDLQEKEVAYCSTYTHCEIHPSMILGVCASIIPFPDHNQSPRNTYQSAMGKQAMGVYITNFHVRMDTLAHVLYYPQKPLVTTRSMEYLRFRELPAGINSIVAIASYTGYNQEDSVIMNRSAVDRGFFRSVFYRSYKEQESKKGFDQEEVFEKPTRETCQGMRHAIYDKLDDDGLIAPGVRVSGDDVIIGKTVTLPENEDELESTNRRYTKRDCSTFLRTSETGIVDQVMVTLNQEGYKFCKIRVRSVRIPQIGDKFASRHGQKGTCGIQYRQEDMPFTCEGITPDIIINPHAIPSRMTIGHLIECLQGKVSANKGEIGDATPFNDAVNVQKISNLLSDYGYHLRGNEVLYNGFTGRKITSQIFIGPTYYQRLKHMVDDKIHSRARGPIQILNRQPMEGRSRDGGLRFGEMERDCQIAHGAAQFLRERLFEASDPYQVHVCNLCGIMAIANTRTHTYECRGCRNKTQISLVRMPYACKLLFQELMSMSIAPRMMSV")
+    end = (time.time() - start) / 60
+    print(output, f'{end} mins total')
+
+    # 15.490066476662953 mins total -- that's a lot
+
+    # import pickle
+    #
+    # o = pickle.dump(get_results("psisearch-S20180608-140601-0766-67820351-p2m"),
+    #                 open("/home/simone/Documents/biochem/dna_pol.pickle", 'wb'))
+
+    a = np.zeros((10, 20))
+    print(a)
+    print(tailor(a, 6).shape)
+    print(tailor(a, 20).shape)
