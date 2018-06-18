@@ -39,19 +39,27 @@ def get_results(jobid):
 def psiblaster(seq):
     CWD = os.path.dirname(os.path.realpath(__file__))
     print(CWD)
-    # psiblast = sp.Popen("psiblast -db uniref50 -out_ascii_pssm temp.mat -num_iterations 3 -num_threads 8",
-    #                     stdin=sp.PIPE,
-    #                     stdout=sp.PIPE, stderr=sp.STDOUT, shell=True, cwd=CWD)
-    # alignment, err = psiblast.communicate(bytes(seq, 'utf-8'))
-    with open ("temp_seq.fasta", "w") as f:
-        f.write(seq)
+    psiblast = sp.Popen("./bin/psiblast -db ./bin/uniref50 -out_ascii_pssm temp.mat -num_iterations 3 -num_threads 8",
+                         stdin=sp.PIPE,
+                         stdout=sp.PIPE, stderr=sp.STDOUT, cwd=CWD,shell=True ,executable="/usr/bin/bash")
+    alignment, err = psiblast.communicate(bytes(seq, 'utf-8'))
 
-    os.system("psiblast -db ./bin/uniref50 -query temp_seq.fasta -out_ascii_pssm temp.mat -num_iterations 3 -num_threads 8")
+    # with open("temp.fasta", "w") as f:
+    #     f.write(seq)
+    # command = "psiblast -db uniref50 -query temp.fasta -out_ascii_pssm temp.mat -num_iterations 3 -num_threads 8"
+    # alignment = sp.check_output(command, shell=True, executable='/bin/bash')
+    #print("!!!!!"+str(alignment))
+
+
 
     with open('temp.mat', 'rb') as f:
         result = f.read()
 
-    os.system("rm temp.mat")
+    #os.system("rm temp.mat")
+    #debug result and rm
+    sp.Popen("./bin/rm temp.mat",cwd=CWD,shell=True,executable="/usr/bin/bash").communicate()
+    #end debug
+
 
     coded_results = result.decode('utf8')
     coded_results = re.sub(" +", " ", coded_results)

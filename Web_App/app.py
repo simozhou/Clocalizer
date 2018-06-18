@@ -34,6 +34,8 @@ def predict():
     sequence = clean_sequence(request.form['sequence'])
     # pssm = inp.make_input(sequence)
     pssm, err = inp.psiblaster(sequence)
+
+
     pssm = inp.ohe_tailor(pssm, 1000)
     feedable = inp.reshaper(pssm, 'cnn')
     with graph.as_default():
