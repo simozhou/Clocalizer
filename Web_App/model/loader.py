@@ -5,13 +5,13 @@ import tensorflow as tf
 
 
 def init():
-    json_model = open("./model/cnn_arch.json")
+    json_model = open("./model/cnn_lstm_arch.json")
     json_model_loaded = json_model.read()
     json_model.close()
 
     loaded_model = model_from_json(json_model_loaded)
     # load weights into new model
-    loaded_model.load_weights("./model/cnn_weights.h5")
+    loaded_model.load_weights("./model/cnn_lstm_weights.h5")
 
     print("Loaded Model from disk")
 

@@ -35,7 +35,7 @@ def predict():
     # pssm = inp.make_input(sequence)
     pssm, err = inp.psiblaster(sequence)
     pssm = inp.ohe_tailor(pssm, 1000)
-    feedable = inp.reshaper(pssm, 'cnn')
+    feedable = inp.reshaper(pssm, 'cnn_lstm')
     with graph.as_default():
         result = classes[np.argmax(model.predict(feedable))]
 
