@@ -7,7 +7,7 @@ import input_soap as inp
 import numpy as np
 import subprocess as sp
 
-sys.path.append(os.path.abspath("./model"))
+sys.path.insert(0, os.path.abspath("./model"))
 
 from loader import *
 
@@ -34,6 +34,8 @@ def predict():
     sequence = clean_sequence(request.form['sequence'])
     # pssm = inp.make_input(sequence)
     pssm, err = inp.psiblaster(sequence)
+
+
     pssm = inp.ohe_tailor(pssm, 1000)
     feedable = inp.reshaper(pssm, 'cnn_lstm')
     with graph.as_default():
